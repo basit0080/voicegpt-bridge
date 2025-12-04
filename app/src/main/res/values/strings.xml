@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">VoiceGPT Bridge</string>
+    <string name="mic_button">Tap and Speak</string>
+    <string name="history_title">Command History</string>
+</resources>
