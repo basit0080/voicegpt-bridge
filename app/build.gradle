@@ -2,44 +2,37 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    // ⚙️ Android SDK settings
-    namespace "com.voicegpt.bridge"
-    compileSdkVersion 33
+    namespace "com.basit.voicegptbridge"
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "com.basit.voicegptbridge"
-        minSdk 21
-        targetSdk 34
+        minSdkVersion 21
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
 
-        // 👉 Multidex support for big projects
         multiDexEnabled true
     }
 
-    // ✅ ViewBinding on (agar XML se views use karte ho)
     buildFeatures {
         viewBinding true
     }
 
-    // ☕ Java / Kotlin compile options (JDK 11 – GitHub Actions ke sath match)
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
-    // ✅ Multidex library
     implementation 'androidx.multidex:multidex:2.0.1'
-
-    // 🔧 Basic AndroidX stack
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }

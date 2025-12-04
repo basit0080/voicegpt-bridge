@@ -3,7 +3,6 @@
 
     <!-- Simple app theme used in AndroidManifest.xml -->
     <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Optional basic settings -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
     </style>
