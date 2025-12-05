@@ -1,52 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="#F5F5F5">
+    android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/titleText"
+        android:text="VoiceGPT Bridge Running!"
+        android:textSize="20sp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="VoiceGPT Bridge"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        android:layout_marginBottom="12dp" />
-
-    <TextView
-        android:id="@+id/subtitleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Bol kar command do. Jarvis-style assistant tumhare sath hai."
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:layout_marginBottom="12dp" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#FFFFFF"
-        android:padding="12dp">
-
-        <TextView
-            android:id="@+id/transcribedText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="..."
-            android:textSize="16sp"
-            android:textColor="#222222" />
-    </ScrollView>
-
-    <Button
-        android:id="@+id/startVoiceButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="🎙 START VOICE INPUT"
-        android:textAllCaps="false"
-        android:layout_marginTop="12dp" />
-
+        android:layout_height="wrap_content"/>
 </LinearLayout>
