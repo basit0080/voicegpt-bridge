@@ -6,5 +6,8 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
     </style>
+    <style name="Theme.Voicegpt" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Filhaal customization nahi, sirf parent se theme le rahe hain -->
+    </style>
 
 </resources>
