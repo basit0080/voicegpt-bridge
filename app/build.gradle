@@ -4,6 +4,8 @@ plugins {
 }
 
 android {
+    namespace "com.basit.voicegpt"
+
     compileSdk 34
 
     defaultConfig {
