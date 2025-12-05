@@ -2,14 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.basit.voicegptbridge">
 
-    <!-- INTERNET for API calls -->
+    <!-- Internet + Mic permissions for ChatGPT + Speech -->
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- Microphone permission -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
-    <!-- Optional: vibrating for feedback later -->
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name="androidx.multidex.MultiDexApplication"
@@ -23,12 +19,10 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
     </application>
