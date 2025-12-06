@@ -112,15 +112,17 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     // ================== ChatGPT Call =====================
     private fun askChatGPT(userText: String) {
-        val apiKey = BuildConfig.ApiKeys.OPENAI_API_KEY
 
-        if (apiKey.isBlank()) {
-            val fallback = buildLocalReply(userText)
-            tvAssistant.text = fallback
-            speak(fallback)
-            btnMic.isEnabled = true
-            return
-        }
+    val model = ApiKeys.OPENAI_MODEL
+    val apiKey = ApiKeys.OPENAI_API_KEY
+
+    if (apiKey.isBlank()) {
+        val fallback = buildLocalReply(userText)
+        tvAssistant.text = fallback
+        speak(fallback)
+        btnMic.isEnabled = true
+        return
+    }
 
         GlobalScope.launch(Dispatchers.IO) {
             try {
