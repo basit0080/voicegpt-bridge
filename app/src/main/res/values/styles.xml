@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Simple app theme used in AndroidManifest.xml -->
+    <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+    </style>
+    <style name="Theme.Voicegpt" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Filhaal customization nahi, sirf parent se theme le rahe hain -->
+    </style>
+
+</resources>
