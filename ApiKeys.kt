@@ -1,8 +1,6 @@
 package com.basit.voicegpt
 
-import com.basit.voicegpt.BuildConfig
-
 object ApiKeys {
-    // BuildConfig se key aayegi (Gradle inject karega)
-    val OPENAI_API_KEY: String = BuildConfig.OPENAI_API_KEY
+    const val OPENAI_API_KEY = BuildConfig.OPENAI_API_KEY
+    const val OPENAI_MODEL = "gpt-4o-mini"   // 🔥 ADD THIS LINE
 }
