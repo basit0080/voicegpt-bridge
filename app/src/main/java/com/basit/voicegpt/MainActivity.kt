@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 }
 
                 val root = JSONObject().apply {
-                    put("model", BuildConfig.OPENAI_MODEL)
+                    put("model", BuildConfig.ApiKeys.OPENAI_MODEL)
                     put("messages", messages)
                 }
 
