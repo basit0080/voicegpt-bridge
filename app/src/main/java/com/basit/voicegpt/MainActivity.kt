@@ -1,7 +1,5 @@
 package com.basit.voicegpt
 
-import com.basit.voicegpt.BuildConfig
-import com.basit.voicegpt.ApiKeys
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -29,9 +27,12 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private lateinit var tvAssistant: TextView
     private lateinit var tvUserSpeech: TextView
     private lateinit var btnMic: View
-    private var tts: TextToSpeech? = null
 
+    private var tts: TextToSpeech? = null
     private val httpClient = OkHttpClient()
+
+    private val REQUEST_CODE_SPEECH = 1001
+    private val REQUEST_CODE_MIC_PERMISSION = 2001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,81 +49,95 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
     }
 
-    // TTS Ready
+    // =================== TTS Init ===================
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
-            val result = tts?.setLanguage(Locale.US)
+            val result = tts?.setLanguage(Locale("ur", "PK"))
             if (result == TextToSpeech.LANG_MISSING_DATA ||
                 result == TextToSpeech.LANG_NOT_SUPPORTED
             ) {
                 tvAssistant.text = "Language not supported."
             }
+        } else {
+            tvAssistant.text = "TTS init failed."
         }
     }
 
     private fun speak(text: String) {
-        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "voicegpt-utterance")
     }
 
-    // Permission
+    // =================== Permissions ===================
     private fun checkMicPermission() {
         val permission = Manifest.permission.RECORD_AUDIO
+        val granted = ContextCompat.checkSelfPermission(this, permission)
 
-        when {
-            ContextCompat.checkSelfPermission(this, permission) ==
-                    PackageManager.PERMISSION_GRANTED -> startListening()
-
-            shouldShowRequestPermissionRationale(permission) -> {
-                tvAssistant.text = "Mic permission is required."
-                requestPermissions(arrayOf(permission), 200)
-            }
-
-            else -> requestPermissions(arrayOf(permission), 200)
+        if (granted == PackageManager.PERMISSION_GRANTED) {
+            startListening()
+        } else {
+            requestPermissions(arrayOf(permission), REQUEST_CODE_MIC_PERMISSION)
         }
     }
 
-    // Listen to speech
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_MIC_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startListening()
+            } else {
+                Toast.makeText(this, "Mic permission denied.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // =================== Speech Input ===================
     private fun startListening() {
         tvAssistant.text = "Sun raha hoon..."
 
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        intent.putExtra(
-            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-        )
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ur-PK")
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale("ur", "PK"))
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Bolna shuru karein...")
+        }
 
-        startActivityForResult(intent, 1001)
+        startActivityForResult(intent, REQUEST_CODE_SPEECH)
     }
 
-    // Speech result
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 1001 && data != null) {
-            val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            val userText = result?.firstOrNull() ?: return
+        if (requestCode == REQUEST_CODE_SPEECH && data != null) {
+            val results =
+                data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) ?: ArrayList()
+            val userText = results.firstOrNull().orEmpty()
 
-            tvUserSpeech.text = userText
-            btnMic.isEnabled = false
-
-            askChatGPT(userText)
+            if (userText.isNotBlank()) {
+                tvUserSpeech.text = userText
+                btnMic.isEnabled = false
+                askChatGPT(userText)
+            }
         }
     }
 
-    // ================== ChatGPT Call =====================
+    // =================== ChatGPT Call ===================
     private fun askChatGPT(userText: String) {
+        val model = ApiKeys.OPENAI_MODEL
+        val apiKey = ApiKeys.OPENAI_API_KEY
 
-    val model = ApiKeys.OPENAI_MODEL
-    val apiKey = ApiKeys.OPENAI_API_KEY
-
-    if (apiKey.isBlank()) {
-        val fallback = buildLocalReply(userText)
-        tvAssistant.text = fallback
-        speak(fallback)
-        btnMic.isEnabled = true
-        return
-    }
+        if (apiKey.isBlank()) {
+            val fallback = buildLocalReply(userText)
+            tvAssistant.text = fallback
+            speak(fallback)
+            btnMic.isEnabled = true
+            return
+        }
 
         GlobalScope.launch(Dispatchers.IO) {
             try {
@@ -132,7 +147,10 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     put(
                         JSONObject().apply {
                             put("role", "system")
-                            put("content", "Tum ek friendly Urdu assistant ho.")
+                            put(
+                                "content",
+                                "Tum ek friendly Urdu AI assistant ho jo Basit bhai se normal baat karta hai."
+                            )
                         }
                     )
                     put(
@@ -144,35 +162,37 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 }
 
                 val root = JSONObject().apply {
-                    put("model", BuildConfig.ApiKeys.OPENAI_MODEL)
+                    put("model", model)
                     put("messages", messages)
                 }
 
-                val body = RequestBody.create(
-                    "application/json".toMediaType(),
-                    root.toString()
-                )
+                val mediaType = "application/json".toMediaType()
+                val body = RequestBody.create(mediaType, root.toString())
 
                 val req = Request.Builder()
                     .url(url)
                     .addHeader("Authorization", "Bearer $apiKey")
+                    .addHeader("Content-Type", "application/json")
                     .post(body)
                     .build()
 
                 val response = httpClient.newCall(req).execute()
-                val responseText = response.body?.string()
+                val responseText = response.body?.string().orEmpty()
 
-                val reply =
-                    if (response.isSuccessful && !responseText.isNullOrBlank()) {
-                        JSONObject(responseText)
-                            .getJSONArray("choices")
+                val reply = if (response.isSuccessful && responseText.isNotBlank()) {
+                    try {
+                        val json = JSONObject(responseText)
+                        json.getJSONArray("choices")
                             .getJSONObject(0)
                             .getJSONObject("message")
                             .getString("content")
                             .trim()
-                    } else {
+                    } catch (e: Exception) {
                         buildLocalReply(userText)
                     }
+                } else {
+                    buildLocalReply(userText)
+                }
 
                 runOnUiThread {
                     tvAssistant.text = reply
@@ -197,21 +217,23 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
     }
 
-    // Local fallback
+    // =================== Local Fallback ===================
     private fun buildLocalReply(userText: String): String {
         val lower = userText.lowercase(Locale.getDefault())
 
         return when {
             lower.contains("assalam") ->
-                "Wa Alaikum Assalam Basit bhai. Kaise ho?"
+                "Wa Alaikum Assalam Basit bhai."
 
-            lower.contains("kese ho") ->
+            lower.contains("kese ho") || lower.contains("kaise ho") ->
                 "Alhamdulillah theek hoon Basit bhai."
 
-            else -> "Aap ne kaha: $userText"
+            else ->
+                "Aap ne kaha: $userText"
         }
     }
 
+    // =================== Cleanup ===================
     override fun onDestroy() {
         tts?.stop()
         tts?.shutdown()
