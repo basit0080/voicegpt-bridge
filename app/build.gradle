@@ -14,12 +14,12 @@ android {
         versionCode 1
         versionName "1.0"
 
-        // Required for ApiKeys.kt
-        buildConfigField "String", "OPENAI_API_KEY", "\"YOUR_KEY_WILL_LOAD_SECURELY\""
+        // Just a placeholder – real key local file se load hoga
+        buildConfigField "String", "OPENAI_API_KEY", "\"DUMMY_KEY\""
     }
 
     buildFeatures {
-        buildConfig = true    // 🔥 THIS FIXES THE ERROR
+        buildConfig = true   // BuildConfig enable
     }
 
     compileOptions {
@@ -33,6 +33,14 @@ android {
 }
 
 dependencies {
+    // Android basic libs
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+
+    // HTTP client for OpenAI
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+
+    // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 }
