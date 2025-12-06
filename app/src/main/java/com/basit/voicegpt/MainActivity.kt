@@ -1,6 +1,7 @@
 package com.basit.voicegpt
 
 import com.basit.voicegpt.BuildConfig
+import com.basit.voicegpt.ApiKeys
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -111,7 +112,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     // ================== ChatGPT Call =====================
     private fun askChatGPT(userText: String) {
-        val apiKey = BuildConfig.OPENAI_API_KEY
+        val apiKey = BuildConfig.ApiKeys.OPENAI_API_KEY
 
         if (apiKey.isBlank()) {
             val fallback = buildLocalReply(userText)
